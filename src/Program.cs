@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Data;
+using System.Runtime.CompilerServices;
 using System.Timers;
+using ConsoleMVVMWatch.Annotations;
 using static System.Console;
 
 namespace ConsoleMVVMWatch
@@ -11,6 +12,10 @@ namespace ConsoleMVVMWatch
         private static void Main(string[] args)
         {
             View view = new View(new ViewModel(new Model()));
+
+            ForegroundColor = ConsoleColor.White;
+            BackgroundColor = ConsoleColor.DarkGreen;
+
             view.Show();
         }
     }
@@ -31,19 +36,38 @@ namespace ConsoleMVVMWatch
             => TimeChanged?.Invoke(e.SignalTime);
     }
 
-    internal class ViewModel
+    internal sealed class ViewModel : INotifyPropertyChanged
     {
-        public string Time { get; set; } = "00:00:00";
+        private string _time = "00:00:00";
+        public string Time
+        {
+            get => _time;
+            set
+            {
+                _time = value;
+                OnPropertyChanged();
+            }
+        }
         public ViewModel(Model model)
             => model.TimeChanged += ModelOnTimeChanged;
 
         private void ModelOnTimeChanged(DateTime obj)
-            => Time = obj.ToShortTimeString();
+            => Time = obj.ToLongTimeString();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged(
+            [CallerMemberName] string propertyName = null)
+        => PropertyChanged?
+            .Invoke(
+                this, 
+                new PropertyChangedEventArgs(propertyName));
     }
 
     internal class View
     {
-        public object DataContext { get; }
+        private object DataContext { get; }
 
         private string _text;
         public string Text
@@ -61,8 +85,7 @@ namespace ConsoleMVVMWatch
         private void Update()
         {
             Clear();
-            ForegroundColor = ConsoleColor.White;
-            BackgroundColor = ConsoleColor.DarkGreen;
+
             Write(Text);
         }
 
@@ -75,27 +98,34 @@ namespace ConsoleMVVMWatch
 
         private void SetBinding(string propertyName, Binding binding)
         {
+            SetPropertyBinding(propertyName, binding);
+            if (DataContext is INotifyPropertyChanged notify)
+                notify.PropertyChanged += (s, e)
+                    => SetPropertyBinding(propertyName, binding);
+        }
+
+        private void SetPropertyBinding(string propertyName, Binding binding)
+        {
             var sourceProperty = DataContext.GetType()
                 .GetProperty(binding.DataContextPropertyName);
-            var targetProperty = this.GetType()
+            var targetProperty = GetType()
                 .GetProperty(propertyName);
             targetProperty?.SetValue(
                 this,
                 sourceProperty?.GetValue(DataContext));
         }
-
         public void Show()
         {
             Update();
             ReadLine();
         }
     }
+
     internal class Binding
     {
         public string DataContextPropertyName { get; }
+
         public Binding(string dataContextPropertyName)
-        {
-            DataContextPropertyName = dataContextPropertyName;
-        }
+            => DataContextPropertyName = dataContextPropertyName;
     }
 }
