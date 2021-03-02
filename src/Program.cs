@@ -44,9 +44,15 @@ namespace ConsoleMVVMWatch
 
     internal class ViewModel
     {
+        public string Time { get; set; }
         public ViewModel(Model model)
         {
+            model.TimeChanged += ModelOnTimeChanged;
+        }
 
+        private void ModelOnTimeChanged(DateTime obj)
+        {
+            Time = obj.ToShortTimeString();
         }
     }
 }
