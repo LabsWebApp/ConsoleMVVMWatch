@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Data;
 using System.Timers;
 using static System.Console;
 
@@ -29,30 +31,71 @@ namespace ConsoleMVVMWatch
             => TimeChanged?.Invoke(e.SignalTime);
     }
 
+    internal class ViewModel
+    {
+        public string Time { get; set; } = "00:00:00";
+        public ViewModel(Model model)
+            => model.TimeChanged += ModelOnTimeChanged;
+
+        private void ModelOnTimeChanged(DateTime obj)
+            => Time = obj.ToShortTimeString();
+    }
+
     internal class View
     {
-        public View(ViewModel viewModel)
-        {
+        public object DataContext { get; }
 
+        private string _text;
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                if (string.Equals(_text, value))
+                    return;
+                _text = value;
+                Update();
+            }
+        }
+
+        private void Update()
+        {
+            Clear();
+            ForegroundColor = ConsoleColor.White;
+            BackgroundColor = ConsoleColor.DarkGreen;
+            Write(Text);
+        }
+
+        public View(ViewModel dataContext)
+        {
+            DataContext = dataContext;
+            var binding = new Binding("Time");
+            SetBinding(nameof(Text), binding);
+        }
+
+        private void SetBinding(string propertyName, Binding binding)
+        {
+            var sourceProperty = DataContext.GetType()
+                .GetProperty(binding.DataContextPropertyName);
+            var targetProperty = this.GetType()
+                .GetProperty(propertyName);
+            targetProperty?.SetValue(
+                this,
+                sourceProperty?.GetValue(DataContext));
         }
 
         public void Show()
         {
-            throw new NotImplementedException();
+            Update();
+            ReadLine();
         }
     }
-
-    internal class ViewModel
+    internal class Binding
     {
-        public string Time { get; set; }
-        public ViewModel(Model model)
+        public string DataContextPropertyName { get; }
+        public Binding(string dataContextPropertyName)
         {
-            model.TimeChanged += ModelOnTimeChanged;
-        }
-
-        private void ModelOnTimeChanged(DateTime obj)
-        {
-            Time = obj.ToShortTimeString();
+            DataContextPropertyName = dataContextPropertyName;
         }
     }
 }
