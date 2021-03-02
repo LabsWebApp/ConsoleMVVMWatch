@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using static System.Console;
 
 namespace ConsoleMVVMWatch
@@ -14,7 +15,18 @@ namespace ConsoleMVVMWatch
 
     internal class Model
     {
+        private Timer _timer;
+        public event Action<DateTime> TimeChanged;
 
+        public Model()
+        {
+            _timer = new Timer(1000);
+            _timer.Elapsed += TimerOnElapsed;
+            _timer.Start();
+        }
+
+        private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+            => TimeChanged?.Invoke(e.SignalTime);
     }
 
     internal class View
