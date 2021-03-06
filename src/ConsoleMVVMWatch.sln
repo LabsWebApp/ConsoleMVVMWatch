@@ -12,10 +12,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExtender", "WinOS\Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{81452B72-ED59-4724-8A71-68FABB0E0847}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleExtender.Test", "WinOS\ConsoleExtender.Test\ConsoleExtender.Test.csproj", "{0A40B625-1461-491E-A9F1-9D83FE61098D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExtender.Test", "WinOS\ConsoleExtender.Test\ConsoleExtender.Test.csproj", "{0A40B625-1461-491E-A9F1-9D83FE61098D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D87C4BA7-0E71-40BB-B445-14589567555C} = {D87C4BA7-0E71-40BB-B445-14589567555C}
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinOS", "WinOS", "{18B12EB0-3621-46F1-BD4E-A7435E456E8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D87C4BA7-0E71-40BB-B445-14589567555C} = {18B12EB0-3621-46F1-BD4E-A7435E456E8A}
 		{0A40B625-1461-491E-A9F1-9D83FE61098D} = {81452B72-ED59-4724-8A71-68FABB0E0847}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

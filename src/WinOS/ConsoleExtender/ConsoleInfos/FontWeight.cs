@@ -1,5 +1,8 @@
 ﻿namespace ConsoleExtender.ConsoleInfos
 {
+    /// <summary>
+    /// Перечисление возможных FontWeight шрифта
+    /// </summary>
     public enum FontWeight
     {
         Thin = 100,
